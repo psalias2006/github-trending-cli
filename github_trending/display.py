@@ -113,10 +113,7 @@ class DisplayManager:
         stars_formatted = self._format_number(stars)
         stars_today_formatted = self._format_number(stars_today)
         
-        # Truncate description if too long
-        max_desc_length = self.terminal_width - 25
-        if len(description) > max_desc_length:
-            description = description[:max_desc_length-3] + "..."
+        # Keep full description without truncation
         
         # Stars display with trending indicator
         stars_today_num = int(stars_today.replace(',', '') or '0')
