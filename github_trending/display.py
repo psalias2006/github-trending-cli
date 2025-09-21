@@ -146,8 +146,22 @@ class DisplayManager:
             description = repo.get('description', 'No description').strip()
             
             self.console.print(line)
-            self.console.print(f"    [dim]{description}[/dim]")
+            self._print_description_with_indent(description)
             self.console.print()
+    
+    def _print_description_with_indent(self, description: str):
+        """Print description with proper indentation for wrapped lines."""
+        import textwrap
+        
+        # Calculate available width (console width minus indentation)
+        available_width = self.console.size.width - 4  # 4 spaces for indentation
+        
+        # Wrap the text to fit within available width
+        wrapped_lines = textwrap.wrap(description, width=available_width)
+        
+        # Print each line with proper indentation
+        for line in wrapped_lines:
+            self.console.print(f"    [dim]{line}[/dim]")
     
     
     def show_repository_header(self, repo: Dict[str, str]):
