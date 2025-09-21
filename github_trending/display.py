@@ -7,6 +7,8 @@ import os
 import shutil
 from typing import List, Dict
 import re
+from rich.console import Console
+from rich.markdown import Markdown
 
 
 class DisplayManager:
@@ -48,6 +50,7 @@ class DisplayManager:
     
     def __init__(self):
         self.terminal_width = self._get_terminal_width()
+        self.console = Console(width=min(self.terminal_width - 4, 120))
     
     def _get_terminal_width(self) -> int:
         """Get the current terminal width."""
@@ -151,7 +154,7 @@ class DisplayManager:
         print(f"📝 Description: {description}")
     
     def show_readme(self, readme_content: str):
-        """Display README content with proper formatting."""
+        """Display README content with beautiful Rich markdown rendering."""
         print("\n" + "-"*80)
         print("📖 README")
         print("-"*80)
@@ -160,8 +163,61 @@ class DisplayManager:
             print("No README content available.")
             return
         
+        self._render_with_rich(readme_content)
+    
+    def _render_with_rich(self, content: str):
+        """Render markdown content using Rich with beautiful formatting and pagination."""
+        try:
+            # Create Rich Markdown object
+            markdown = Markdown(content)
+            
+            # Render to string to get the formatted content
+            with self.console.capture() as capture:
+                self.console.print(markdown)
+            
+            # Get the rendered content and split into lines
+            rendered_content = capture.get()
+            lines = rendered_content.split('\n')
+            
+            # Paginate the beautifully rendered content
+            self._paginate_rich_content(lines)
+            
+        except Exception as e:
+            print(f"⚠️  Error rendering with Rich: {e}")
+            self._render_fallback(content)
+    
+    def _paginate_rich_content(self, lines: list):
+        """Display Rich-rendered content with pagination."""
+        lines_per_page = 30
+        current_line = 0
+        
+        while current_line < len(lines):
+            # Display current page
+            end_line = min(current_line + lines_per_page, len(lines))
+            
+            for i in range(current_line, end_line):
+                print(lines[i])
+            
+            current_line = end_line
+            
+            # Check if there are more lines
+            if current_line < len(lines):
+                remaining_lines = len(lines) - current_line
+                print(f"\n--- More content available ({remaining_lines} lines remaining) ---")
+                
+                try:
+                    user_input = input("📖 Press Enter to continue, 'q' to stop reading: ").strip().lower()
+                    if user_input == 'q':
+                        print("📖 README reading stopped.")
+                        break
+                except KeyboardInterrupt:
+                    print("\n📖 README reading interrupted.")
+                    break
+    
+    def _render_fallback(self, content: str):
+        """Fallback rendering for plain text display."""
         # Split content into lines for better display
-        lines = readme_content.split('\n')
+        lines = content.split('\n')
         
         # Display with pagination for very long READMEs
         if len(lines) > 50:

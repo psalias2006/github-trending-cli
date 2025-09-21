@@ -175,9 +175,11 @@ The project follows a clean, modular architecture:
 
 ## 🔧 Dependencies
 
+### Dependencies
 - **requests** (≥2.28.0) - HTTP requests to GitHub
 - **beautifulsoup4** (≥4.11.0) - HTML parsing
 - **lxml** (≥4.9.0) - Fast XML/HTML parser backend
+- **rich** (≥13.0.0) - Beautiful terminal rendering with colors and formatting
 
 ## 🎯 Usage Examples
 
