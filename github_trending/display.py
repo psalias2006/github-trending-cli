@@ -86,12 +86,8 @@ class DisplayManager:
         print(f"🌟 Discover the hottest projects on GitHub".center(self.terminal_width))
         print(f"{header_line}")
         
-        # Repository list with enhanced formatting
-        for i, repo in enumerate(repos, 1):
-            self._print_repository_summary(i, repo)
-            # Add separator between repos (except for the last one)
-            if i < len(repos):
-                print("─" * min(60, self.terminal_width - 10))
+        # Paginate repository list
+        self._paginate_repositories(repos)
         
         # Footer with stats
         print(f"\n{header_line}")
@@ -252,6 +248,39 @@ class DisplayManager:
                         break
                 except KeyboardInterrupt:
                     print("\n📖 README reading interrupted.")
+                    break
+    
+    def _paginate_repositories(self, repos: List[Dict[str, str]]):
+        """Display repositories with pagination."""
+        repos_per_page = 5  # Show 5 repositories per page
+        current_repo = 0
+        
+        while current_repo < len(repos):
+            # Display current page of repositories
+            end_repo = min(current_repo + repos_per_page, len(repos))
+            
+            for i in range(current_repo, end_repo):
+                repo = repos[i]
+                self._print_repository_summary(i + 1, repo)
+                # Add separator between repos (except for the last one on the page)
+                if i < end_repo - 1:
+                    print("─" * min(60, self.terminal_width - 10))
+            
+            current_repo = end_repo
+            
+            # Check if there are more repositories
+            if current_repo < len(repos):
+                remaining_repos = len(repos) - current_repo
+                print(f"\n--- More repositories available ({remaining_repos} remaining) ---")
+                
+                try:
+                    user_input = input("📋 Press Enter to see more repositories, 'q' to stop browsing: ").strip().lower()
+                    if user_input == 'q':
+                        print("📋 Repository browsing stopped.")
+                        break
+                    print()  # Add spacing before next page
+                except KeyboardInterrupt:
+                    print("\n📋 Repository browsing interrupted.")
                     break
     
     def show_error(self, message: str):
