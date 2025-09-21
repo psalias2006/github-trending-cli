@@ -31,16 +31,6 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-### Option 2: Direct installation
-
-```bash
-# Install dependencies
-pip install requests beautifulsoup4 lxml
-
-# Run directly
-python -m github_trending.cli
-```
-
 ## ⚡ Quick Start
 
 ```bash
