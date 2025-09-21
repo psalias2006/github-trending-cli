@@ -9,6 +9,9 @@ from typing import List, Dict
 import re
 from rich.console import Console
 from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.text import Text
+from rich.align import Align
 
 
 class DisplayManager:
@@ -69,30 +72,36 @@ class DisplayManager:
         except (ValueError, AttributeError):
             return number_str or "0"
     
-    def show_repositories(self, repos: List[Dict[str, str]], date_range: str):
-        """Display a list of trending repositories."""
+    def show_repositories(self, repos: List[Dict[str, str]], date_range: str, callback=None):
+        """Display a list of trending repositories with Rich formatting."""
         if not repos:
-            print("No repositories found.")
+            self.console.print("[red]No repositories found.[/red]")
             return
         
         # Header with enhanced styling
         range_emoji = {"daily": "📅", "weekly": "📊", "monthly": "📈"}.get(date_range, "📋")
         range_text = date_range.title() if date_range != "current" else "Current List"
         
-        # Create a beautiful header
-        header_line = "═" * self.terminal_width
-        print(f"\n{header_line}")
-        print(f"🚀 GitHub Trending Repositories - {range_text} {range_emoji}".center(self.terminal_width))
-        print(f"🌟 Discover the hottest projects on GitHub".center(self.terminal_width))
-        print(f"{header_line}")
+        # Simple header without panels
+        header_text = Text()
+        header_text.append("🚀 GitHub Trending Repositories", style="bold")
+        header_text.append(f" - {range_text} {range_emoji}", style="dim")
         
-        # Paginate repository list
-        self._paginate_repositories(repos)
+        self.console.print()
+        self.console.print(header_text)
+        self.console.print()
         
-        # Footer with stats
-        print(f"\n{header_line}")
-        print(f"📊 Found {len(repos)} trending repositories • Happy coding! 🎉".center(self.terminal_width))
-        print(f"{header_line}")
+        # Paginate repository list with Rich
+        self._paginate_repositories_rich(repos, callback)
+        
+        # Simple footer without panels
+        footer_text = Text()
+        footer_text.append("Found ", style="dim")
+        footer_text.append(str(len(repos)), style="bold")
+        footer_text.append(" trending repositories", style="dim")
+        
+        self.console.print()
+        self.console.print(footer_text)
     
     def _print_repository_summary(self, index: int, repo: Dict[str, str]):
         """Print a single repository summary with enhanced formatting."""
@@ -250,38 +259,181 @@ class DisplayManager:
                     print("\n📖 README reading interrupted.")
                     break
     
-    def _paginate_repositories(self, repos: List[Dict[str, str]]):
-        """Display repositories with pagination."""
+    def _paginate_repositories_rich(self, repos: List[Dict[str, str]], callback=None):
+        """Display repositories with scrolling pagination and interactive selection."""
         repos_per_page = 5  # Show 5 repositories per page
         current_repo = 0
+        displayed_repos = []  # Keep track of all displayed repos
         
-        while current_repo < len(repos):
+        while True:  # Infinite loop - only exit when user presses 'q'
+            # Clear screen for scroll effect (but keep header visible)
+            if current_repo > 0:
+                # Clear previous content but keep some context
+                print("\033[H\033[2J", end="")  # Clear screen
+                # Re-print header
+                header_text = Text()
+                header_text.append("🚀 GitHub Trending Repositories", style="bold")
+                header_text.append(" - Daily 📅", style="dim")
+                self.console.print(header_text)
+                self.console.print()
+            
             # Display current page of repositories
             end_repo = min(current_repo + repos_per_page, len(repos))
             
+            # Add current page repos to displayed list
             for i in range(current_repo, end_repo):
-                repo = repos[i]
-                self._print_repository_summary(i + 1, repo)
-                # Add separator between repos (except for the last one on the page)
-                if i < end_repo - 1:
-                    print("─" * min(60, self.terminal_width - 10))
+                if i >= len(displayed_repos):
+                    displayed_repos.append(repos[i])
             
-            current_repo = end_repo
+            # Show all repositories up to current point
+            for i, repo in enumerate(displayed_repos):
+                name = repo.get('name', 'Unknown').strip()
+                language = repo.get('language', 'Unknown').strip()
+                stars = self._format_number(repo.get('stars', '0'))
+                stars_today = self._format_number(repo.get('stars_today', '0'))
+                description = repo.get('description', 'No description').strip()
+                
+                # Clean up repository name
+                name = re.sub(r'\s+', ' ', name)
+                
+                # Get language emoji and color
+                lang_emoji = self.LANGUAGE_COLORS.get(language, self.LANGUAGE_COLORS['Unknown'])
+                
+                # Color coding for stars today with trending indicators
+                stars_today_num = int(repo.get('stars_today', '0').replace(',', '') or '0')
+                if stars_today_num > 100:
+                    stars_today_style = "red"
+                    trending_indicator = "🔥"
+                elif stars_today_num > 50:
+                    stars_today_style = "yellow"
+                    trending_indicator = "🚀"
+                elif stars_today_num > 10:
+                    stars_today_style = "green"
+                    trending_indicator = "📈"
+                else:
+                    stars_today_style = "dim"
+                    trending_indicator = ""
+                
+                # Create the main line with repository info
+                line = Text()
+                line.append(f"{i + 1:2}. ", style="dim")
+                line.append(f"{name}", style="bold")
+                line.append(f"  {lang_emoji}", style="dim")
+                line.append(f"  ⭐{stars}", style="dim")
+                line.append(f"  {trending_indicator}", style=stars_today_style)
+                line.append(f"+{stars_today}", style=stars_today_style)
+                
+                self.console.print(line)
+                self.console.print(f"    [dim]{description}[/dim]")
+                self.console.print()
             
-            # Check if there are more repositories
+            # Only advance current_repo if there are more repositories to show
+            if current_repo < len(repos):
+                current_repo = end_repo
+            
+            # Interactive prompt
             if current_repo < len(repos):
                 remaining_repos = len(repos) - current_repo
-                print(f"\n--- More repositories available ({remaining_repos} remaining) ---")
+                self.console.print(f"[dim]({remaining_repos} more repositories)[/dim]")
+                prompt_text = f"Enter repo number (1-{len(displayed_repos)}), Enter for more, 'q' to quit: "
+            else:
+                prompt_text = f"Enter repo number (1-{len(displayed_repos)}) or 'q' to quit: "
+            
+            try:
+                user_input = input(prompt_text).strip().lower()
                 
-                try:
-                    user_input = input("📋 Press Enter to see more repositories, 'q' to stop browsing: ").strip().lower()
-                    if user_input == 'q':
-                        print("📋 Repository browsing stopped.")
-                        break
-                    print()  # Add spacing before next page
-                except KeyboardInterrupt:
-                    print("\n📋 Repository browsing interrupted.")
+                if user_input == 'q':
                     break
+                elif user_input == '':
+                    if current_repo >= len(repos):
+                        # No more repos, stay in selection mode and redisplay current state
+                        print("\033[H\033[2J", end="")  # Clear screen
+                        # Re-print header
+                        header_text = Text()
+                        header_text.append("🚀 GitHub Trending Repositories", style="bold")
+                        header_text.append(" - Daily 📅", style="dim")
+                        self.console.print(header_text)
+                        self.console.print()
+                        
+                        # Re-display all repos
+                        for i, repo in enumerate(displayed_repos):
+                            name = repo.get('name', 'Unknown').strip()
+                            language = repo.get('language', 'Unknown').strip()
+                            stars = self._format_number(repo.get('stars', '0'))
+                            stars_today = self._format_number(repo.get('stars_today', '0'))
+                            description = repo.get('description', 'No description').strip()
+                            
+                            # Clean up repository name
+                            name = re.sub(r'\s+', ' ', name)
+                            
+                            # Get language emoji and color
+                            lang_emoji = self.LANGUAGE_COLORS.get(language, self.LANGUAGE_COLORS['Unknown'])
+                            
+                            # Color coding for stars today with trending indicators
+                            stars_today_num = int(repo.get('stars_today', '0').replace(',', '') or '0')
+                            if stars_today_num > 100:
+                                stars_today_style = "red"
+                                trending_indicator = "🔥"
+                            elif stars_today_num > 50:
+                                stars_today_style = "yellow"
+                                trending_indicator = "🚀"
+                            elif stars_today_num > 10:
+                                stars_today_style = "green"
+                                trending_indicator = "📈"
+                            else:
+                                stars_today_style = "dim"
+                                trending_indicator = ""
+                            
+                            # Create the main line with repository info
+                            line = Text()
+                            line.append(f"{i + 1:2}. ", style="dim")
+                            line.append(f"{name}", style="bold")
+                            line.append(f"  {lang_emoji}", style="dim")
+                            line.append(f"  ⭐{stars}", style="dim")
+                            line.append(f"  {trending_indicator}", style=stars_today_style)
+                            line.append(f"+{stars_today}", style=stars_today_style)
+                            
+                            self.console.print(line)
+                            self.console.print(f"    [dim]{description}[/dim]")
+                            self.console.print()
+                        
+                        continue
+                    # Continue to next page (only if there are more repos)
+                    continue
+                else:
+                    # Try to parse as repository number
+                    try:
+                        repo_num = int(user_input)
+                        if 1 <= repo_num <= len(displayed_repos):
+                            # User selected a repository
+                            selected_repo = displayed_repos[repo_num - 1]
+                            if callback:
+                                # Call the callback function (e.g., show repository details)
+                                callback(repo_num - 1, displayed_repos)
+                                # After viewing details, clear screen and redisplay current state
+                                print("\033[H\033[2J", end="")  # Clear screen
+                                # Re-print header
+                                header_text = Text()
+                                header_text.append("🚀 GitHub Trending Repositories", style="bold")
+                                header_text.append(" - Daily 📅", style="dim")
+                                self.console.print(header_text)
+                                self.console.print()
+                                # Re-display all repos up to current point
+                                continue
+                            else:
+                                self.console.print(f"\n[green]Selected: {selected_repo.get('name', 'Unknown')}[/green]")
+                                input("Press Enter to continue browsing...")
+                                continue
+                        else:
+                            self.console.print(f"[red]Please enter a number between 1 and {len(displayed_repos)}[/red]")
+                            continue
+                    except ValueError:
+                        self.console.print("[red]Please enter a valid number, Enter, or 'q'[/red]")
+                        continue
+                        
+            except KeyboardInterrupt:
+                print("\nInterrupted.")
+                break
     
     def show_error(self, message: str):
         """Display an error message."""
