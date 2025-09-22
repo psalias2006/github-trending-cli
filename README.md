@@ -1,5 +1,17 @@
 # GitHub Trending CLI
 
+```bash
+
+       _ _   _           _           _                      _ _                        _ _ 
+      (_) | | |         | |         | |                    | (_)                      | (_)
+  __ _ _| |_| |__  _   _| |__ ______| |_ _ __ ___ _ __   __| |_ _ __   __ _ ______ ___| |_ 
+ / _` | | __| '_ \| | | | '_ \______| __| '__/ _ \ '_ \ / _` | | '_ \ / _` |______/ __| | |
+| (_| | | |_| | | | |_| | |_) |     | |_| | |  __/ | | | (_| | | | | | (_| |     | (__| | |
+ \__, |_|\__|_| |_|\__,_|_.__/       \__|_|  \___|_| |_|\__,_|_|_| |_|\__, |      \___|_|_|
+  __/ |                                                                __/ |               
+ |___/                                                                |___/                
+```
+
 Browse GitHub's trending repositories from your terminal with daily star counts and README viewing.
 
 [![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
