@@ -16,6 +16,7 @@ We like browsing GitHub's trending page, so we made a CLI version.
 
 ## Installation
 
+### Local install
 ```bash
 git clone https://github.com/your-username/github-trending-cli.git
 cd github-trending-cli
@@ -25,6 +26,19 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 pip install -e .
+```
+
+### Docker
+```bash
+# Build and run
+git clone https://github.com/your-username/github-trending-cli.git
+cd github-trending-cli
+docker build -t github-trending-cli .
+docker run -it --rm github-trending-cli
+
+# Or run different time ranges
+docker run -it --rm github-trending-cli --range weekly
+docker run -it --rm github-trending-cli -r monthly
 ```
 
 ## Usage
