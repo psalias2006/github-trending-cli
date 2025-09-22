@@ -1,232 +1,92 @@
-# 🚀 GitHub Trending CLI
+# GitHub Trending CLI
 
-A simple and elegant command-line tool to browse GitHub trending repositories with interactive navigation and README viewing.
+Browse GitHub's trending repositories from your terminal with daily star counts and README viewing.
 
-## ✨ Features
+[![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-- 📊 **Browse trending repositories** from GitHub's trending page
-- 📅 **Multiple time ranges**: daily, weekly, and monthly trends
-- 🧭 **Interactive navigation** to explore repositories
-- 📖 **README viewer** to read project documentation directly in terminal
-- 🎨 **Beautiful, modern interface** with Unicode box drawing, language-specific emojis, and trending indicators
-- ⚡ **Fast and lightweight** with minimal dependencies
+## Features
 
-## 🛠️ Installation
+- View trending repositories with real-time daily star counts
+- Support for daily, weekly, and monthly time ranges
+- Interactive README viewing with syntax highlighting
+- Language indicators and trending level indicators
+- Clean terminal interface using Rich
 
-### Option 1: Install from source (Recommended)
+## Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/your-username/github-trending-cli.git
 cd github-trending-cli
 
-# Create and activate virtual environment
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
 pip install -r requirements.txt
-
-# Install the package
 pip install -e .
 ```
 
-## ⚡ Quick Start
+## Usage
 
 ```bash
-# After installation, simply run:
+# View today's trending repositories
 github-trending
 
-# Or try different time ranges:
-github-trending --range weekly
-github-trending --range monthly
-```
-
-## 🚀 Usage
-
-### Basic Commands
-
-```bash
-# Show today's trending repositories
-github-trending
-
-# Show this week's trending repositories
+# View weekly trending
 github-trending --range weekly
 
-# Show this month's trending repositories  
-github-trending --range monthly
-
-# Short form
-github-trending -r weekly
-```
-
-### Interactive Navigation
-
-Once the tool displays the trending repositories, you can:
-
-- **Enter a number (1-25)** to view a repository's README
-- **Enter 'list' or 'l'** to show the repository list again
-- **Enter 'quit' or 'q'** to exit the application
-
-### Example Session
-
-```bash
-$ github-trending --range weekly
-
-════════════════════════════════════════════════════════════════════════════════
-                    🚀 GitHub Trending Repositories - Weekly 📊                    
-                   🌟 Discover the hottest projects on GitHub                    
-════════════════════════════════════════════════════════════════════════════════
-
-┌─  1. 📦 microsoft/TypeScript
-├─ 🔷 TypeScript
-├─ 🔥 95,234 stars (+234 today)
-└─ 📝 TypeScript is a superset of JavaScript that compiles to clean JavaScript...
-   💡 Type '1' to view README
-────────────────────────────────────────────────────────────
-
-┌─  2. 📦 facebook/react
-├─ 🟨 JavaScript
-├─ 🔥 201,456 stars (+456 today)
-└─ 📝 A declarative, efficient, and flexible JavaScript library for building...
-   💡 Type '2' to view README
-
-════════════════════════════════════════════════════════════════════════════════
-               📊 Found 25 trending repositories • Happy coding! 🎉                
-════════════════════════════════════════════════════════════════════════════════
-
-╔══════════════════════════════════════════════════════════╗
-║                    🧭 Navigation Menu                    ║
-╠══════════════════════════════════════════════════════════╣
-║  📖 Enter a number (1-25) to view README                ║
-║  📋 Enter 'list' or 'l' to show repositories again      ║
-║  🚪 Enter 'quit' or 'q' to exit                         ║
-╚══════════════════════════════════════════════════════════╝
-
-👉 Your choice: 1
-
-================================================================================
-📦 Repository Details
-================================================================================
-📦 Name: microsoft/TypeScript
-🔗 URL: https://github.com/microsoft/TypeScript
-🏷️  Language: TypeScript
-⭐ Stars: 95234 (234 today)
-📝 Description: TypeScript is a superset of JavaScript that compiles to clean JavaScript...
-
-📖 Fetching README...
-
---------------------------------------------------------------------------------
-📖 README
---------------------------------------------------------------------------------
-# TypeScript
-
-TypeScript is a language for application-scale JavaScript...
-[README content continues...]
-
-📖 Press Enter to continue...
-```
-
-## 📁 Project Structure
-
-```
-github-trending-cli/
-├── github_trending/
-│   ├── __init__.py          # Package initialization
-│   ├── cli.py               # Main CLI interface and argument parsing
-│   ├── scraper.py           # GitHub trending page scraper
-│   └── display.py           # Output formatting and display logic
-├── requirements.txt         # Python dependencies
-├── setup.py                # Package setup configuration
-└── README.md               # This file
-```
-
-## 🏗️ Architecture
-
-The project follows a clean, modular architecture:
-
-### `scraper.py` - GitHubTrendingScraper
-- Handles HTTP requests to GitHub trending page
-- Parses HTML content using BeautifulSoup
-- Extracts repository information (name, stars, language, etc.)
-- Fetches README content from repositories
-
-### `display.py` - DisplayManager
-- Manages all terminal output formatting
-- Handles repository list display
-- Provides README pagination for long content
-- Responsive terminal width detection
-
-### `cli.py` - GitHubTrendingCLI
-- Command-line argument parsing
-- Interactive navigation loop
-- Coordinates between scraper and display components
-- Error handling and user input validation
-
-## 🔧 Dependencies
-
-### Dependencies
-- **requests** (≥2.28.0) - HTTP requests to GitHub
-- **beautifulsoup4** (≥4.11.0) - HTML parsing
-- **lxml** (≥4.9.0) - Fast XML/HTML parser backend
-- **rich** (≥13.0.0) - Beautiful terminal rendering with colors and formatting
-
-## 🎯 Usage Examples
-
-### View Today's Trending
-```bash
-github-trending
-```
-
-### View Weekly Trending
-```bash
-github-trending --range weekly
-```
-
-### View Monthly Trending
-```bash
+# View monthly trending
 github-trending -r monthly
 ```
 
-## 🤝 Contributing
+## Example Output
+
+```
+🚀 GitHub Trending Repositories - Daily 📅
+
+ 1. microsoft/TypeScript      🔷  ⭐95,234   🔥+1,234
+    TypeScript is a superset of JavaScript that compiles to clean JavaScript
+    
+ 2. facebook/react           ⚛️  ⭐201,456  🚀+567  
+    A declarative, efficient, and flexible JavaScript library
+    
+ 3. python/cpython           🐍  ⭐45,123   📈+89
+    The Python programming language
+
+Enter repo number (1-3), Enter for more, 'q' to quit: 
+```
+
+Trending indicators: 🔥 100+ daily stars, 🚀 50+ daily stars, 📈 10+ daily stars
+
+## Architecture
+
+- `scraper.py` - Fetches and parses GitHub's trending page
+- `display.py` - Terminal UI using Rich library
+- `cli.py` - Command-line interface and argument parsing
+
+## Dependencies
+
+- `requests` - HTTP requests
+- `beautifulsoup4` - HTML parsing
+- `rich` - Terminal formatting
+- `lxml` - XML/HTML processing
+
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes
+4. Run tests if available
+5. Submit a pull request
 
-## 📝 License
+## Troubleshooting
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+| Issue | Solution |
+|-------|----------|
+| `ModuleNotFoundError` | Run `pip install -e .` in project directory |
+| Connection errors | Check internet connection |
+| Empty results | GitHub may be rate limiting, wait a few minutes |
 
-## 🐛 Troubleshooting
+## License
 
-### Common Issues
-
-**Issue**: `ModuleNotFoundError: No module named 'github_trending'`
-**Solution**: Make sure you've installed the package with `pip install -e .`
-
-**Issue**: `requests.exceptions.ConnectionError`
-**Solution**: Check your internet connection and GitHub's availability
-
-**Issue**: Empty repository list
-**Solution**: GitHub might be rate-limiting requests. Wait a few minutes and try again.
-
-### Getting Help
-
-If you encounter any issues:
-
-1. Check the [Issues](https://github.com/your-username/github-trending-cli/issues) page
-2. Create a new issue with detailed information about the problem
-3. Include your Python version and operating system
-
-## 🌟 Acknowledgments
-
-- GitHub for providing the trending repositories page
-- The Python community for excellent libraries like requests and BeautifulSoup
-- All the amazing open-source projects that inspire us daily
-
----
-
-**Happy exploring! 🚀**
+MIT License - see [LICENSE](LICENSE) file for details.
