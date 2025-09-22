@@ -1,29 +1,18 @@
 # GitHub Trending CLI
 
-```bash
+We like browsing GitHub's trending page, so we made a CLI version.
 
-       _ _   _           _           _                      _ _                        _ _ 
-      (_) | | |         | |         | |                    | (_)                      | (_)
-  __ _ _| |_| |__  _   _| |__ ______| |_ _ __ ___ _ __   __| |_ _ __   __ _ ______ ___| |_ 
- / _` | | __| '_ \| | | | '_ \______| __| '__/ _ \ '_ \ / _` | | '_ \ / _` |______/ __| | |
-| (_| | | |_| | | | |_| | |_) |     | |_| | |  __/ | | | (_| | | | | | (_| |     | (__| | |
- \__, |_|\__|_| |_|\__,_|_.__/       \__|_|  \___|_| |_|\__,_|_|_| |_|\__, |      \___|_|_|
-  __/ |                                                                __/ |               
- |___/                                                                |___/                
-```
-
-Browse GitHub's trending repositories from your terminal with daily star counts and README viewing.
+![GitHub Trending CLI Screenshot](github-trending-screenshot.png)
 
 [![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+## What it does
 
-- View trending repositories with real-time daily star counts
-- Support for daily, weekly, and monthly time ranges
-- Interactive README viewing with syntax highlighting
-- Language indicators and trending level indicators
-- Clean terminal interface using Rich
+- Shows trending repositories with daily star counts
+- Supports daily, weekly, and monthly views
+- Click on any repo to read its README
+- Simple terminal interface
 
 ## Installation
 
@@ -32,7 +21,7 @@ git clone https://github.com/your-username/github-trending-cli.git
 cd github-trending-cli
 
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
 
 pip install -r requirements.txt
 pip install -e .
@@ -41,64 +30,27 @@ pip install -e .
 ## Usage
 
 ```bash
-# View today's trending repositories
-github-trending
-
-# View weekly trending
-github-trending --range weekly
-
-# View monthly trending
-github-trending -r monthly
+github-trending                 # today's trending
+github-trending --range weekly  # this week
+github-trending -r monthly      # this month
 ```
 
-## Example Output
+Enter a repo number to read its README, or press Enter to see more repos.
 
-```
-🚀 GitHub Trending Repositories - Daily 📅
+## How it works
 
- 1. microsoft/TypeScript      🔷  ⭐95,234   🔥+1,234
-    TypeScript is a superset of JavaScript that compiles to clean JavaScript
-    
- 2. facebook/react           ⚛️  ⭐201,456  🚀+567  
-    A declarative, efficient, and flexible JavaScript library
-    
- 3. python/cpython           🐍  ⭐45,123   📈+89
-    The Python programming language
+Scrapes GitHub's trending page and displays it in your terminal. That's it.
 
-Enter repo number (1-3), Enter for more, 'q' to quit: 
-```
+- `scraper.py` - Gets the trending page HTML and parses it
+- `display.py` - Shows the data nicely in terminal
+- `cli.py` - Handles the command line stuff
 
-Trending indicators: 🔥 100+ daily stars, 🚀 50+ daily stars, 📈 10+ daily stars
-
-## Architecture
-
-- `scraper.py` - Fetches and parses GitHub's trending page
-- `display.py` - Terminal UI using Rich library
-- `cli.py` - Command-line interface and argument parsing
-
-## Dependencies
-
-- `requests` - HTTP requests
-- `beautifulsoup4` - HTML parsing
-- `rich` - Terminal formatting
-- `lxml` - XML/HTML processing
+Uses `requests`, `beautifulsoup4`, `rich`, and `lxml`.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes
-4. Run tests if available
-5. Submit a pull request
-
-## Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| `ModuleNotFoundError` | Run `pip install -e .` in project directory |
-| Connection errors | Check internet connection |
-| Empty results | GitHub may be rate limiting, wait a few minutes |
+Fork it, make changes, send a PR.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT
