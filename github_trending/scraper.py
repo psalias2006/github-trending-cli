@@ -117,11 +117,16 @@ class GitHubTrendingScraper:
     
     def _extract_stars_today(self, article) -> str:
         """Extract stars gained today."""
-        stars_today_element = article.find('span', class_='d-inline-block')
-        if stars_today_element and "stars today" in stars_today_element.get_text():
-            stars_today_match = re.search(r'(\d+(?:,\d+)*)', stars_today_element.get_text())
-            if stars_today_match:
-                return stars_today_match.group(1).replace(',', '')
+        # Look for the span that contains "stars today" text
+        # The element has classes like "d-inline-block float-sm-right"
+        spans = article.find_all('span')
+        for span in spans:
+            span_text = span.get_text().strip()
+            if "stars today" in span_text:
+                # Extract the number from text like "957 stars today"
+                stars_today_match = re.search(r'(\d+(?:,\d+)*)\s+stars today', span_text)
+                if stars_today_match:
+                    return stars_today_match.group(1).replace(',', '')
         return "0"
     
     def get_readme(self, repo_url: str) -> str:
