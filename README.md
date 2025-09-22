@@ -18,7 +18,7 @@ We like browsing GitHub's trending page, so we made a CLI version.
 
 ### Local install
 ```bash
-git clone https://github.com/your-username/github-trending-cli.git
+git clone https://github.com/psalias2006/github-trending-cli.git
 cd github-trending-cli
 
 python3 -m venv venv
@@ -31,8 +31,9 @@ pip install -e .
 ### Docker
 ```bash
 # Build and run
-git clone https://github.com/your-username/github-trending-cli.git
+git clone https://github.com/psalias2006/github-trending-cli.git
 cd github-trending-cli
+
 docker build -t github-trending-cli .
 docker run -it --rm github-trending-cli
 
