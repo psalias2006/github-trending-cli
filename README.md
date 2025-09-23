@@ -4,7 +4,7 @@ We like browsing GitHub's trending page, so we made a CLI version.
 
 You can export it also 😉
 
-![GitHub Trending CLI Screenshot](github-trending-screenshot.png)
+![GitHub Trending CLI](github-trending-cli.gif)
 
 [![Python](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
