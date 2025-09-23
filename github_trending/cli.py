@@ -122,7 +122,6 @@ Examples:
         
         self._show_repository_details(repo)
         self._show_repository_readme(repo)
-        self._wait_for_user()
     
     def _show_repository_details(self, repo: Dict[str, str]):
         """Display repository details header."""
@@ -136,10 +135,6 @@ Examples:
         print("\n📖 Fetching README...")
         readme_content = self.scraper.get_readme(repo['url'])
         self.display.show_readme(readme_content)
-    
-    def _wait_for_user(self):
-        """Wait for user input to continue."""
-        input("\n📖 Press Enter to continue...")
 
 
 def main():

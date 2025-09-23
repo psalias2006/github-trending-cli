@@ -4,6 +4,9 @@ Handles all output formatting and display logic.
 """
 
 import shutil
+import sys
+import tty
+import termios
 from typing import List, Dict, Callable, Optional
 import re
 from rich.console import Console
@@ -205,32 +208,87 @@ class DisplayManager:
             print(f"⚠️  Error rendering with Rich: {e}")
             self._paginate_content(content.split('\n'))
     
+    def _get_key(self):
+        """Get a single keypress from the user."""
+        try:
+            # Check if we're in a terminal that supports raw mode
+            if not sys.stdin.isatty():
+                # Fallback for non-interactive environments
+                return 'quit'
+                
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            tty.setraw(sys.stdin.fileno())
+            key = sys.stdin.read(1)
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+            
+            # Handle arrow keys (they come as escape sequences)
+            if key == '\x1b':  # ESC sequence
+                key += sys.stdin.read(2)
+                if key == '\x1b[A':  # Up arrow
+                    return 'up'
+                elif key == '\x1b[B':  # Down arrow
+                    return 'down'
+                elif key == '\x1b[5~':  # Page Up
+                    return 'page_up'
+                elif key == '\x1b[6~':  # Page Down
+                    return 'page_down'
+            elif key == '\r' or key == '\n':  # Enter
+                return 'enter'
+            elif key == 'q' or key == 'Q':
+                return 'quit'
+            elif key == '\x03':  # Ctrl+C
+                return 'quit'
+            
+            return key
+        except:
+            # Fallback for environments that don't support raw terminal input
+            return 'quit'
+    
+    def _get_terminal_height(self) -> int:
+        """Get the current terminal height."""
+        try:
+            return shutil.get_terminal_size().lines
+        except:
+            return 24  # Default fallback
+    
     def _paginate_content(self, lines: List[str]):
-        """Display content with pagination for long texts."""
+        """Display content with arrow key navigation."""
+        if not lines:
+            return
+            
         current_line = 0
+        terminal_height = self._get_terminal_height()
+        max_lines = max(15, terminal_height - 2)  # Leave space for instructions (2 lines)
         
-        while current_line < len(lines):
-            end_line = min(current_line + self.LINES_PER_PAGE, len(lines))
+        while True:
+            # Clear screen
+            print("\033[2J\033[H", end="")
             
             # Display current page
+            end_line = min(current_line + max_lines, len(lines))
             for i in range(current_line, end_line):
                 print(lines[i])
             
-            current_line = end_line
+            # Show navigation info
+            total_lines = len(lines)
+            print(f"\n📖 README ({current_line + 1}-{end_line} of {total_lines}) | ↑/↓ scroll, Enter/PgDn more, 'q' exit")
             
-            # Check if there are more lines
-            if current_line < len(lines):
-                remaining_lines = len(lines) - current_line
-                print(f"\n--- More content available ({remaining_lines} lines remaining) ---")
-                
-                try:
-                    user_input = input("📖 Press Enter to continue, 'q' to stop reading: ").strip().lower()
-                    if user_input == 'q':
-                        print("📖 README reading stopped.")
-                        break
-                except KeyboardInterrupt:
-                    print("\n📖 README reading interrupted.")
-                    break
+            # Get user input
+            key = self._get_key()
+            
+            if key == 'quit':
+                break
+            elif key == 'up':
+                current_line = max(0, current_line - 1)
+            elif key == 'down':
+                current_line = min(len(lines) - max_lines, current_line + 1)
+            elif key == 'page_up':
+                current_line = max(0, current_line - max_lines)
+            elif key == 'enter' or key == 'page_down':
+                current_line = min(len(lines) - max_lines, current_line + max_lines)
+        
+        print("\n📖 README reading finished.")
     
     def _paginate_repositories(self, repos: List[Dict[str, str]], date_range: str, callback: Optional[Callable] = None):
         """Display repositories with scrolling pagination and interactive selection."""

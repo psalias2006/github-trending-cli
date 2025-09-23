@@ -1,6 +1,8 @@
 # GitHub Trending CLI
 
-We like browsing GitHub's trending page, so we made a CLI version. You can export it also 😉
+We like browsing GitHub's trending page, so we made a CLI version.
+
+You can export it also 😉
 
 ![GitHub Trending CLI Screenshot](github-trending-screenshot.png)
 
