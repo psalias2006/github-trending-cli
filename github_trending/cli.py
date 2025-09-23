@@ -7,6 +7,7 @@ import sys
 from typing import List, Dict, Callable
 from .scraper import GitHubTrendingScraper
 from .display import DisplayManager
+from .export import ExportManager
 
 
 class GitHubTrendingCLI:
@@ -19,6 +20,7 @@ class GitHubTrendingCLI:
     def __init__(self):
         self.scraper = GitHubTrendingScraper()
         self.display = DisplayManager()
+        self.export_manager = ExportManager()
         self.current_repos: List[Dict[str, str]] = []
     
     def run(self):
@@ -28,7 +30,10 @@ class GitHubTrendingCLI:
         if not self._fetch_repositories(args.range):
             sys.exit(1)
         
-        self._display_repositories(args.range)
+        if args.export:
+            self._export_repositories(args.range, args.format)
+        else:
+            self._display_repositories(args.range)
     
     def _parse_arguments(self) -> argparse.Namespace:
         """Parse command line arguments."""
@@ -53,6 +58,19 @@ class GitHubTrendingCLI:
             callback=self._handle_repository_selection
         )
     
+    def _export_repositories(self, date_range: str, export_format: str):
+        """Export repositories to file."""
+        try:
+            filename = self.export_manager.export_repositories(
+                self.current_repos, 
+                date_range, 
+                export_format
+            )
+            print(f"✅ Successfully exported {len(self.current_repos)} repositories to: {filename}")
+        except Exception as e:
+            print(f"❌ Export failed: {e}")
+            sys.exit(1)
+    
     def _create_parser(self) -> argparse.ArgumentParser:
         """Create and configure the argument parser."""
         parser = argparse.ArgumentParser(
@@ -68,6 +86,19 @@ class GitHubTrendingCLI:
             help=f'Time range for trending repositories (default: {self.DEFAULT_RANGE})'
         )
         
+        parser.add_argument(
+            '--export', '-e',
+            action='store_true',
+            help='Export trending repositories to file instead of displaying'
+        )
+        
+        parser.add_argument(
+            '--format', '-f',
+            choices=['csv', 'json'],
+            default='csv',
+            help='Export format: csv or json (default: csv)'
+        )
+        
         return parser
     
     def _get_usage_examples(self) -> str:
@@ -77,6 +108,12 @@ Examples:
   github-trending                    # Show today's trending repos
   github-trending --range weekly     # Show this week's trending repos
   github-trending --range monthly    # Show this month's trending repos
+  
+  # Export examples
+  github-trending --export           # Export today's trending repos to CSV
+  github-trending -e -f json         # Export to JSON format
+  github-trending -r weekly -e       # Export weekly trending to CSV
+  github-trending -r monthly -e -f json  # Export monthly trending to JSON
             """
     
     def _handle_repository_selection(self, repo_index: int, displayed_repos: List[Dict[str, str]]):

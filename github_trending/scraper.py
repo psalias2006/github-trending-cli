@@ -81,7 +81,7 @@ class GitHubTrendingScraper:
             'description': self._extract_description(article),
             'language': self._extract_language(article),
             'stars': self._extract_stars(article),
-            'stars_today': self._extract_stars_today(article)
+            'stars_period': self._extract_stars_period(article)
         }
     
     def _extract_name_and_url(self, article) -> tuple[Optional[str], Optional[str]]:
@@ -94,14 +94,22 @@ class GitHubTrendingScraper:
         if not link_element:
             return None, None
             
+        # Clean up the name: normalize whitespace and remove spaces around forward slash
         name = link_element.get_text().strip()
+        name = re.sub(r'\s+', ' ', name)  # Replace multiple whitespace with single space
+        name = re.sub(r'\s*/\s*', '/', name)  # Remove spaces around forward slash
+        
         url = "https://github.com" + link_element.get('href', '')
         return name, url
     
     def _extract_description(self, article) -> str:
         """Extract repository description."""
         description_element = article.find('p', class_='col-9')
-        return description_element.get_text().strip() if description_element else "No description"
+        if description_element:
+            # Clean up whitespace and newlines
+            description = re.sub(r'\s+', ' ', description_element.get_text().strip())
+            return description
+        return "No description"
     
     def _extract_language(self, article) -> str:
         """Extract programming language."""
@@ -115,18 +123,24 @@ class GitHubTrendingScraper:
             return stars_element.get_text().strip().replace(',', '')
         return "0"
     
-    def _extract_stars_today(self, article) -> str:
-        """Extract stars gained today."""
-        # Look for the span that contains "stars today" text
+    def _extract_stars_period(self, article) -> str:
+        """Extract stars gained in the current period (today/this week/this month)."""
+        # Look for the span that contains stars period text
         # The element has classes like "d-inline-block float-sm-right"
         spans = article.find_all('span')
         for span in spans:
             span_text = span.get_text().strip()
-            if "stars today" in span_text:
-                # Extract the number from text like "957 stars today"
-                stars_today_match = re.search(r'(\d+(?:,\d+)*)\s+stars today', span_text)
-                if stars_today_match:
-                    return stars_today_match.group(1).replace(',', '')
+            # Match different time periods: "stars today", "stars this week", "stars this month"
+            period_patterns = [
+                r'(\d+(?:,\d+)*)\s+stars today',
+                r'(\d+(?:,\d+)*)\s+stars this week', 
+                r'(\d+(?:,\d+)*)\s+stars this month'
+            ]
+            
+            for pattern in period_patterns:
+                match = re.search(pattern, span_text)
+                if match:
+                    return match.group(1).replace(',', '')
         return "0"
     
     def get_readme(self, repo_url: str) -> str:

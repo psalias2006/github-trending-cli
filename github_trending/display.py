@@ -62,10 +62,10 @@ class DisplayManager:
         except (ValueError, AttributeError):
             return number_str or "0"
     
-    def _get_trending_indicator(self, stars_today: str) -> tuple[str, str]:
-        """Get trending indicator and style based on stars today."""
+    def _get_trending_indicator(self, stars_period: str) -> tuple[str, str]:
+        """Get trending indicator and style based on stars in current period."""
         try:
-            stars_num = int(stars_today.replace(',', '') or '0')
+            stars_num = int(stars_period.replace(',', '') or '0')
             for threshold, indicator, style in self.TRENDING_THRESHOLDS:
                 if stars_num >= threshold:
                     return indicator, style
@@ -86,10 +86,10 @@ class DisplayManager:
         name = self._clean_repo_name(repo.get('name', 'Unknown'))
         language = repo.get('language', 'Unknown').strip()
         stars = self._format_number(repo.get('stars', '0'))
-        stars_today = self._format_number(repo.get('stars_today', '0'))
+        stars_period = self._format_number(repo.get('stars_period', '0'))
         
         lang_emoji = self._get_language_emoji(language)
-        trending_indicator, stars_style = self._get_trending_indicator(repo.get('stars_today', '0'))
+        trending_indicator, stars_style = self._get_trending_indicator(repo.get('stars_period', '0'))
         
         line = Text()
         line.append(f"{index:2}. ", style="dim")
@@ -97,7 +97,7 @@ class DisplayManager:
         line.append(f"  {lang_emoji}", style="dim")
         line.append(f"  ⭐{stars}", style="dim")
         line.append(f"  {trending_indicator}", style=stars_style)
-        line.append(f"+{stars_today}", style=stars_style)
+        line.append(f"+{stars_period}", style=stars_style)
         
         return line
     
@@ -170,13 +170,13 @@ class DisplayManager:
         url = repo.get('url', '')
         language = repo.get('language', 'Unknown')
         stars = repo.get('stars', '0')
-        stars_today = repo.get('stars_today', '0')
+        stars_period = repo.get('stars_period', '0')
         description = repo.get('description', 'No description')
         
         print(f"📦 Name: {name}")
         print(f"🔗 URL: {url}")
         print(f"🏷️  Language: {language}")
-        print(f"⭐ Stars: {stars} ({stars_today} today)")
+        print(f"⭐ Stars: {stars} (+{stars_period} this period)")
         print(f"📝 Description: {description}")
     
     def show_readme(self, readme_content: str):

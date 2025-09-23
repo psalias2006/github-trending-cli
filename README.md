@@ -12,55 +12,60 @@ We like browsing GitHub's trending page, so we made a CLI version.
 - Shows trending repositories with daily star counts
 - Supports daily, weekly, and monthly views
 - Click on any repo to read its README
+- Export to CSV or JSON Lines format
 - Simple terminal interface
 
 ## Installation
 
-### Local install
+### Local
 ```bash
 git clone https://github.com/psalias2006/github-trending-cli.git
 cd github-trending-cli
-
-python3 -m venv venv
-source venv/bin/activate
-
-pip install -r requirements.txt
-pip install -e .
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements.txt && pip install -e .
 ```
 
 ### Docker
 ```bash
-# Build and run
 git clone https://github.com/psalias2006/github-trending-cli.git
 cd github-trending-cli
-
 docker build -t github-trending-cli .
-docker run -it --rm github-trending-cli
-
-# Or run different time ranges
-docker run -it --rm github-trending-cli --range weekly
-docker run -it --rm github-trending-cli -r monthly
 ```
 
 ## Usage
 
+### Interactive Mode
 ```bash
-github-trending                 # today's trending
-github-trending --range weekly  # this week
+# Local
+github-trending                 # today
+github-trending -r weekly       # this week
 github-trending -r monthly      # this month
+
+# Docker
+docker run -it --rm github-trending-cli
+docker run -it --rm github-trending-cli -r weekly
 ```
 
-Enter a repo number to read its README, or press Enter to see more repos.
+### Export Mode
+```bash
+# Local
+github-trending -e              # CSV export
+github-trending -e -f json      # JSON Lines export
+github-trending -e -r weekly    # Weekly data
 
-## How it works
+# Docker (requires volume mount)
+docker run --rm -v "$(pwd)/exported:/app/exported" github-trending-cli -e
+docker run --rm -v "$(pwd)/exported:/app/exported" github-trending-cli -e -f json
+```
 
-Scrapes GitHub's trending page and displays it in your terminal. That's it.
+## Export Format
 
-- `scraper.py` - Gets the trending page HTML and parses it
-- `display.py` - Shows the data nicely in terminal
-- `cli.py` - Handles the command line stuff
+Files saved to `exported/` with timestamps: `github_trending_{range}_{datetime}.{csv|jsonl}`
 
-Uses `requests`, `beautifulsoup4`, `rich`, and `lxml`.
+**CSV**: Standard format with headers  
+**JSON Lines**: One JSON object per line, ideal for data processing
+
+**Columns**: name, url, description, language, stars, stars_period, range, export_datetime
 
 ## Contributing
 
