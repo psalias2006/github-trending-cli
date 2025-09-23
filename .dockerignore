@@ -5,5 +5,5 @@ __pycache__/
 *.pyd
 .git/
 .gitignore
-github-trending-cli.gif
+github-trending-screenshot.png
 .DS_Store
