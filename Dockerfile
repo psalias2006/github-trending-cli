@@ -7,7 +7,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application
-COPY github_trending/ ./github_trending/
+COPY git_trending/ ./git_trending/
 COPY setup.py .
 COPY README.md .
 
@@ -15,4 +15,4 @@ COPY README.md .
 RUN pip install -e .
 
 # Run the CLI
-ENTRYPOINT ["github-trending"]
+ENTRYPOINT ["git-trending"]

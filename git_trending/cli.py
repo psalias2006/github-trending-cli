@@ -1,5 +1,5 @@
 """
-Command Line Interface for GitHub Trending CLI Tool
+Command Line Interface for Git Trending CLI Tool
 """
 
 import argparse
@@ -105,15 +105,15 @@ class GitHubTrendingCLI:
         """Get usage examples for the help text."""
         return """
 Examples:
-  github-trending                    # Show today's trending repos
-  github-trending --range weekly     # Show this week's trending repos
-  github-trending --range monthly    # Show this month's trending repos
+  git-trending                    # Show today's trending repos
+  git-trending --range weekly     # Show this week's trending repos
+  git-trending --range monthly    # Show this month's trending repos
   
   # Export examples
-  github-trending --export           # Export today's trending repos to CSV
-  github-trending -e -f json         # Export to JSON format
-  github-trending -r weekly -e       # Export weekly trending to CSV
-  github-trending -r monthly -e -f json  # Export monthly trending to JSON
+  git-trending --export           # Export today's trending repos to CSV
+  git-trending -e -f json         # Export to JSON format
+  git-trending -r weekly -e       # Export weekly trending to CSV
+  git-trending -r monthly -e -f json  # Export monthly trending to JSON
             """
     
     def _handle_repository_selection(self, repo_index: int, displayed_repos: List[Dict[str, str]]):
@@ -150,7 +150,7 @@ def main():
 
 def _handle_keyboard_interrupt():
     """Handle keyboard interrupt gracefully."""
-    print("\n\n👋 Thanks for using GitHub Trending CLI!")
+    print("\n\n👋 Thanks for using Git Trending CLI!")
     sys.exit(0)
 
 

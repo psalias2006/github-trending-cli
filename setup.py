@@ -11,9 +11,9 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="github-trending-cli",
+    name="git-trending",
     version="1.0.0",
-    author="GitHub Trending CLI",
+    author="Git Trending CLI",
     description="A simple CLI tool to browse GitHub trending repositories",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -34,7 +34,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "console_scripts": [
-            "github-trending=github_trending.cli:main",
+            "git-trending=git_trending.cli:main",
         ],
     },
 )
