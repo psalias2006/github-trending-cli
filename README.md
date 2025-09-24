@@ -2,7 +2,7 @@
 
 We like browsing GitHub's trending page, so we built a Git extension for it.
 
-Browse trending repositories from your terminal. View READMEs, export data, and skip the web interface entirely.
+Browse trending repositories from your terminal. View READMEs, export data, and skip the web interface.
 
 ![Git Trending CLI Screenshot](github-trending-screenshot.png)
 
