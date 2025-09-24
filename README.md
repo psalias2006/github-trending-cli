@@ -1,8 +1,8 @@
 # Git Trending
 
-We like browsing GitHub's trending page, so we made a Git extension for it.
+We like browsing GitHub's trending page, so we built a Git extension for it.
 
-Run `git trending` to browse trending repositories right from your terminal (You can export data too 😉)
+Browse trending repositories from your terminal. View READMEs, export data, and skip the web interface entirely.
 
 ![Git Trending CLI Screenshot](github-trending-screenshot.png)
 
@@ -11,30 +11,31 @@ Run `git trending` to browse trending repositories right from your terminal (You
 
 ## What it does
 
-- Browse GitHub trending repositories as a **Git extension**
-- Shows trending repositories with daily star counts
-- Supports daily, weekly, and monthly views
-- Click on any repo to read its README
-- Export to CSV or JSON Lines format
-- Simple terminal interface
-- Works with `git trending` command!
+- Works as a Git extension (`git trending`)
+- Daily, weekly, and monthly trending views
+- Click repositories to read their READMEs
+- Export data to CSV or JSON Lines
+- Terminal-based interface
+- No configuration needed
 
 ## Installation
 
-### pipx (Recommended - Global Install)
+### pipx (Recommended)
+
 ```bash
 # Install pipx if you don't have it
 pip install --user pipx
 pipx ensurepath
 
-# Install git-trending globally
+# Install git-trending
 pipx install git+https://github.com/psalias2006/github-trending-cli.git
 
-# Now you can use it as a git extension!
+# Use it anywhere
 git trending
 ```
 
-### Local Development
+### Development
+
 ```bash
 git clone https://github.com/psalias2006/github-trending-cli.git
 cd github-trending-cli
@@ -43,6 +44,7 @@ pip install -r requirements.txt && pip install -e .
 ```
 
 ### Docker
+
 ```bash
 git clone https://github.com/psalias2006/github-trending-cli.git
 cd github-trending-cli
@@ -51,44 +53,45 @@ docker build -t git-trending .
 
 ## Usage
 
-### As Git Extension (Recommended)
 ```bash
 git trending                 # Show today's trending repos
 git trending -r weekly       # Show this week's trending repos
 git trending -r monthly      # Show this month's trending repos
 ```
 
+### Export
+
+```bash
+git trending -e              # Export to CSV
+git trending -e -f json      # Export as JSON Lines
+git trending -e -r weekly    # Export weekly data
+```
+
 ### Docker
+
 ```bash
 docker run -it --rm git-trending
 docker run -it --rm git-trending -r weekly
-```
 
-### Export Mode
-```bash
-# As Git extension
-git trending -e              # CSV export
-git trending -e -f json      # JSON Lines export
-git trending -e -r weekly    # Weekly data
-
-# Docker (requires volume mount)
+# Export (requires volume mount)
 docker run --rm -v "$(pwd)/exported:/app/exported" git-trending -e
 docker run --rm -v "$(pwd)/exported:/app/exported" git-trending -e -f json
 ```
 
 ## How Git Extensions Work
 
-When you install `git-trending`, Git automatically recognizes it as an extension. This means:
+When you install `git-trending`, Git automatically recognizes it as an extension:
+
 - `git trending` → runs `git-trending` 
 - `git trending -r weekly` → runs `git-trending -r weekly`
-- Works from any directory, just like other git commands!
+- Works from any directory, like other git commands
 
 ## Export Format
 
 Files saved to `exported/` with timestamps: `github_trending_{range}_{datetime}.{csv|jsonl}`
 
 **CSV**: Standard format with headers  
-**JSON Lines**: One JSON object per line, ideal for data processing
+**JSON Lines**: One JSON object per line
 
 **Columns**: name, url, description, language, stars, stars_period, range, export_datetime
 
